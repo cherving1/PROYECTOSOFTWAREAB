@@ -1,0 +1,54 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
+use Tests\TestCase;
+
+class InformeMigrationTest extends TestCase
+{
+    use RefreshDatabase; // Esto reinicia la base de datos para cada prueba
+
+    /** @test */
+    public function it_creates_informes_table()
+    {
+        // Ejecuta la migración
+        $this->artisan('migrate');
+
+        // Verifica que la tabla 'informes' exista
+        $this->assertTrue(Schema::hasTable('informes'));
+
+        // Verifica que los campos existan en la tabla 'informes'
+        $this->assertTrue(Schema::hasColumn('informes', 'idInforme'));
+        $this->assertTrue(Schema::hasColumn('informes', 'idProyecto'));
+        $this->assertTrue(Schema::hasColumn('informes', 'descripcionInforme'));
+        $this->assertTrue(Schema::hasColumn('informes', 'fechaEntrega'));
+        $this->assertTrue(Schema::hasColumn('informes', 'created_at'));
+        $this->assertTrue(Schema::hasColumn('informes', 'updated_at'));
+
+        // Verifica que la clave primaria esté configurada correctamente
+        $this->assertEquals('integer', Schema::getColumnType('informes', 'idInforme'));
+        $this->assertTrue(Schema::getConnection()->getSchemaBuilder()->getPrimaryKey('informes') === 'idInforme');
+
+        // Verifica la existencia de la clave foránea
+        $foreignKeys = Schema::getConnection()->getDoctrineSchemaManager()->listTableForeignKeys('informes');
+        $this->assertCount(1, $foreignKeys);
+        $this->assertEquals('idProyecto', $foreignKeys[0]->getLocalColumns()[0]);
+        $this->assertEquals('proyectos', $foreignKeys[0]->getForeignTableName());
+        $this->assertEquals('idProyecto', $foreignKeys[0]->getForeignColumns()[0]);
+    }
+
+    /** @test */
+    public function it_drops_informes_table()
+    {
+        // Ejecuta la migración
+        $this->artisan('migrate');
+
+        // Ejecuta la migración inversa
+        $this->artisan('migrate:rollback');
+
+        // Verifica que la tabla 'informes' ya no exista
+        $this->assertFalse(Schema::hasTable('informes'));
+    }
+}

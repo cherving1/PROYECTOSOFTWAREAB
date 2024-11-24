@@ -1,0 +1,90 @@
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use App\Models\Practica;
+use App\Models\Proyecto;
+
+class RouteTest extends TestCase
+{
+    /** @test */
+    public function it_has_home_route()
+    {
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertViewIs('home'); // Asumiendo que la vista del home se llama 'home'
+    }
+
+    /** @test */
+    public function it_has_practicas_routes()
+    {
+        // Probar la ruta para mostrar todas las prácticas
+        $response = $this->get(route('practicas.index'));
+        $response->assertStatus(200);
+
+        // Probar la ruta para mostrar el formulario de crear una nueva práctica
+        $response = $this->get(route('practicas.create'));
+        $response->assertStatus(200);
+
+        // Probar la ruta para guardar una nueva práctica
+        $response = $this->post(route('practicas.store'), [
+            'nombre' => 'Práctica de Test',
+            'descripcion' => 'Descripción de la práctica',
+        ]);
+        $response->assertStatus(201); // Asumiendo que el almacenamiento devuelve un 201
+
+        // Probar la ruta para editar una práctica
+        $response = $this->get(route('practicas.edit', ['practica' => 1]));
+        $response->assertStatus(200);
+
+        // Probar la ruta para actualizar una práctica
+        $response = $this->put(route('practicas.update', ['practica' => 1]), [
+            'nombre' => 'Práctica Actualizada',
+            'descripcion' => 'Descripción actualizada',
+        ]);
+        $response->assertStatus(200); // Asumiendo que la actualización devuelve un 200
+
+        // Probar la ruta para eliminar una práctica
+        $response = $this->delete(route('practicas.destroy', ['practica' => 1]));
+        $response->assertStatus(204); // Asumiendo que la eliminación devuelve un 204
+    }
+
+    /** @test */
+    public function it_has_proyectos_routes()
+    {
+        // Probar la ruta para mostrar todas las proyectos
+        $response = $this->get(route('proyectos.index'));
+        $response->assertStatus(200);
+
+        // Probar la ruta para mostrar el formulario de crear un nuevo proyecto
+        $response = $this->get(route('proyectos.create'));
+        $response->assertStatus(200);
+
+        // Probar la ruta para guardar un nuevo proyecto
+        $response = $this->post(route('proyectos.store'), [
+            'nombreProyecto' => 'Nuevo Proyecto',
+            'descripcionProyecto' => 'Descripción del nuevo proyecto',
+        ]);
+        $response->assertStatus(201); // Asumiendo que el almacenamiento devuelve un 201
+
+        // Probar la ruta para editar un proyecto
+        $response = $this->get(route('proyectos.edit', ['proyecto' => 1]));
+        $response->assertStatus(200);
+
+        // Probar la ruta para actualizar un proyecto
+        $response = $this->put(route('proyectos.update', ['proyecto' => 1]), [
+            'nombreProyecto' => 'Proyecto Actualizado',
+            'descripcionProyecto' => 'Descripción actualizada',
+        ]);
+        $response->assertStatus(200); // Asumiendo que la actualización devuelve un 200
+
+        // Probar la ruta para mostrar un proyecto específico
+        $response = $this->get(route('proyectos.show', ['proyecto' => 1]));
+        $response->assertStatus(200);
+
+        // Probar la ruta para eliminar un proyecto
+        $response = $this->delete(route('proyectos.destroy', ['proyecto' => 1]));
+        $response->assertStatus(204); // Asumiendo que la eliminación devuelve un 204
+    }
+}
