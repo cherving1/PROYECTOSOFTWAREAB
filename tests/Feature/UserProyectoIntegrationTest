@@ -1,0 +1,49 @@
+<?php
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use App\Models\User;
+use App\Models\Proyecto;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class UserProyectoIntegrationTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+     * @test
+     */
+    public function it_can_create_a_user_and_associate_a_project()
+    {
+        // Crear un usuario
+        $user = User::create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        // Crear un proyecto asociado al usuario
+        $proyecto = Proyecto::create([
+            'nombreProyecto' => 'Nuevo Proyecto',
+            'descripcionProyecto' => 'Descripción del proyecto',
+            'responsable' => 'John Doe',
+            'fechaInicio' => '2024-01-01',
+            'fechaFin' => '2024-12-31',
+        ]);
+
+        // Verificar que el proyecto se haya creado correctamente
+        $this->assertDatabaseHas('proyectos', [
+            'nombreProyecto' => 'Nuevo Proyecto',
+            'descripcionProyecto' => 'Descripción del proyecto',
+            'responsable' => 'John Doe',
+            'fechaInicio' => '2024-01-01',
+            'fechaFin' => '2024-12-31',
+        ]);
+
+        // Verificar que el usuario se haya creado correctamente
+        $this->assertDatabaseHas('users', [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
+    }
+}
